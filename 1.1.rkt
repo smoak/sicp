@@ -31,3 +31,17 @@
 ; exercise 1.2
 (/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5)))))
    (* 3 (- 6 2) (- 2 7)))
+
+; exercise 1.3
+
+(define (sum-of-squares a b)
+  (+ (* a a) (* b b)))
+
+(define (sum-of-two-largest-squares a b c)
+  (cond ((and (> a c) (> b c)) (sum-of-squares a b))
+        ((and (> b a) (> c a)) (sum-of-squares b c))
+        ((and (> a b) (> c b)) (sum-of-squares a c))
+        ))
+(check-equal? (+ 36 64) (sum-of-two-largest-squares 4 6 8))
+(check-equal? (+ 36 64) (sum-of-two-largest-squares 6 4 8))
+(check-equal? (+ 36 64) (sum-of-two-largest-squares 6 8 4))
