@@ -106,3 +106,21 @@
   (sqrt-iter 1.0 x))
 
 ; Not entirely sure about this exercise
+
+; exercise 1.8
+(define (cube-good-enough? guess x)
+  (< (abs (- (* guess guess guess) x)) 0.001))
+
+(define (improve-cube guess x)
+  (/ (+ (/ x (square guess)) (* 2 guess)) 3))
+
+(define (cube-root-iter guess x)
+  (if (cube-good-enough? guess x)
+      guess
+      (cube-root-iter (improve-cube guess x)
+                      x)))
+
+(define (cube-root x)
+  (cube-root-iter 1.0 x))
+
+(cube-root 512)
