@@ -51,3 +51,20 @@
 ; if b is negative it will subtract b from a
 (define (a-plus-abs-b a b)
   ((if (> b 0) + -) a b))
+
+; exercise 1.5
+
+(define (p) (p))
+
+(define (test x y)
+  (if (= x 0)
+      0
+      y))
+
+; (test 0 (p))
+; applicative-order
+; evaluate 0 as 0
+; evaluate p as p
+; continue infinitely
+; normal-order
+; expand test and then eval the if. 0 is 0 so eval 0 and never eval p
