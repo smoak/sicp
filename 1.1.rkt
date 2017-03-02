@@ -68,3 +68,17 @@
 ; continue infinitely
 ; normal-order
 ; expand test and then eval the if. 0 is 0 so eval 0 and never eval p
+
+; exercise 1.6
+
+(define (new-if predicate then-clause else-clause)
+  (cond (predicate then-clause)
+        (else else-clause)))
+
+;(define (sqrt-iter guess x)
+;  (new-if (good-enough? guess x)
+;          guess
+;          (sqrt-iter (improve guess x)
+;                     x)))
+
+; This won't work because it has to evaluate both branches and so it will infinitely recurse
