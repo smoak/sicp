@@ -45,3 +45,9 @@
 (check-equal? (+ 36 64) (sum-of-two-largest-squares 4 6 8))
 (check-equal? (+ 36 64) (sum-of-two-largest-squares 6 4 8))
 (check-equal? (+ 36 64) (sum-of-two-largest-squares 6 8 4))
+
+; exercise 1.4
+; if b is positive it will a and b together
+; if b is negative it will subtract b from a
+(define (a-plus-abs-b a b)
+  ((if (> b 0) + -) a b))
