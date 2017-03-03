@@ -4,15 +4,16 @@
 (define (cube x)
   (* x x x))
 
-(define (sum term a next b)
+(define (sum func a next-func b)
   (if (> a b)
       0
-      (+ (term a)
-         (sum term (next a) next b))))
+      (+ (func a)
+         (sum func (next-func a) next-func b))))
 
 (define (inc n) (+ n 1))
-(define (sum-cubes a b)
-  (sum cube a inc b))
+
+(define (sum-cubes start end)
+  (sum cube start inc end))   ;  (start..end).map { |x| cube(x) }.inject(:+)
 
 (check-equal? (+ (cube 3) (cube 4)) (sum-cubes 3 4))
 (check-equal? 3025 (sum-cubes 1 10))
@@ -48,6 +49,32 @@
 
 ; exercise 1.30
 
-(define (sum term a next b)
-  (define (iter a result)
-    (if 
+;(define (sum-iter func a next-func b)
+;  (define (iter a result)
+;    (if (> a result)
+;        0
+
+; exercise 1.31
+; bleh too much math
+
+; exercise 1.32
+
+(define (sum-accumulate func a next-func b)
+  (define (combine a b)
+    (+ a b)
+  )
+  (accumulate combine 0 func a next-func b)
+)
+
+(define (accumulate combiner null-value func current next-func end)
+  (define (next-value) (next-func current))
+  (define (calculated-value) (func current))
+  (define (next-values) (accumulate combiner null-value func (next-value) next-func end))
+  (if (> current end)
+      null-value
+      (combiner (calculated-value) (next-values))
+  )
+)
+
+(check-equal? 3 (sum-accumulate identity 1 inc 2))
+(check-equal? 15 (sum-accumulate identity 1 inc 5)) ; 1 + 2 + 3 + 4 + 5 = 15
