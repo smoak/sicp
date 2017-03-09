@@ -1,6 +1,12 @@
 #lang racket
 (require rackunit)
 
+(define (average a b)
+  (/ (+ a b) 2))
+
+(define (square x)
+  (* x x))
+
 (define (cube x)
   (* x x x))
 
@@ -78,3 +84,117 @@
 
 (check-equal? 3 (sum-accumulate identity 1 inc 2))
 (check-equal? 15 (sum-accumulate identity 1 inc 5)) ; 1 + 2 + 3 + 4 + 5 = 15
+
+; exercise 1.33
+; skipping
+
+
+(define (f g)
+  (g 2))
+
+(check-equal? 4 (f square))
+
+(check-equal? 6 (f (lambda (z) (* z (+ z 1)))))
+
+; exercise 1.34
+
+; infinite loop?
+
+(define (search f neg-point pos-point)
+  (let ((midpoint (average neg-point pos-point)))
+    (if (close-enough? neg-point pos-point)
+        midpoint
+        (let ((test-value (f midpoint)))
+          (cond ((positive? test-value)
+                 (search f neg-point midpoint))
+                ((negative? test-value)
+                 (search f midpoint pos-point))
+                (else midpoint))))))
+
+(define (close-enough? x y)
+  (< (abs (- x y)) 0.001))
+
+(define (half-interval-method f a b)
+  (let ((a-value (f a))
+        (b-value (f b)))
+    (cond ((and (negative? a-value) (positive? b-value))
+           (search f a b))
+          ((and (negative? b-value) (positive? a-value))
+           (search f b a))
+          (else
+           (error "Values are not of opposite sign" a b)))))
+
+(define tolerance 0.00001)
+(define (fixed-point f first-guess)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next)
+          next
+          (try next))))
+  (try first-guess))
+
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+
+(check-equal? 55 ((average-damp square) 10))
+
+(define dx 0.00001)
+
+(define (deriv g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
+
+(define (newton-transform g)
+  (lambda (x)
+    (- x (/ (g x) ((deriv g) x)))))
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+; exercise 1.40
+
+
+; exercise 1.41
+
+(define (double func)
+  (lambda (x) (func (func x))))
+
+((double inc) 1)
+(((double (double double)) inc) 5)
+
+; exercise 1.42
+(define (compose f g)
+  (lambda (x) (f (g x))))
+
+(check-equal? 49 ((compose square inc) 6))
+
+; exercise 1.43
+(define (repeated func times)
+  (if (= times 1)
+      func
+      (compose func (repeated func (- times 1)))))
+
+(check-equal? 625 ((repeated square 2) 5))
+
+; exercise 1.44
+(define (smooth func dx)
+  (lambda (x) (/ (+ (func (- x dx)) (func x) (func (+ x dx))) 3)))
+
+((smooth sin 0.7) (/ pi 2))
+
+(define (n-fold-smooth func dx n)
+  (repeated (smooth func dx) n))
+
+; exercise 1.45
+
+; exercise 1.46
+; can this be done with a lambda?
+(define (iterative-improve good-enough-func improve-guess-func)
+  (define (try-improve guess)
+    (if (good-enough-func guess)
+        guess
+        (try-improve (improve-guess-func guess))))
+  try-improve)
